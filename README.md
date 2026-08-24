@@ -1,93 +1,269 @@
-# EV3 leJOS Robot
+# Autonomous EV3 Forklift Robot
 
+A team robotics project developed using **LEGO Mindstorms EV3**, **Java**, and the **leJOS** robotics framework. The project involved designing and programming an autonomous forklift-style robot capable of following a route, detecting and avoiding obstacles, and transporting pallet-style LEGO objects using a motorised lifting mechanism.
 
+## Overview
 
-## Getting started
+The objective of the project was to design and develop an autonomous mobile robot capable of navigating a marked route while interacting with objects in its environment.
 
-To make it easy for you to get started with GitLab, here's a list of recommended next steps.
+The robot combines a differential-drive chassis with a motorised lifting mechanism and multiple EV3 sensors. A colour sensor provides feedback for route following, an ultrasonic sensor detects obstacles, and a touch sensor provides an emergency-stop mechanism.
 
-Already a pro? Just edit this README.md and make it your own. Want to make it easy? [Use the template at the bottom](#editing-this-readme)!
+The software was developed in Java using the **leJOS EV3 API**, which provides interfaces for controlling EV3 motors, reading sensor data, performing differential-drive navigation, and implementing behaviour-based robotic systems.
 
-## Add your files
+The project was completed as a **team project**, with development responsibilities distributed across different aspects of the robot including navigation, object handling, obstacle detection, behaviour control, testing, calibration, and system integration.
 
-- [ ] [Create](https://docs.gitlab.com/ee/user/project/repository/web_editor.html#create-a-file) or [upload](https://docs.gitlab.com/ee/user/project/repository/web_editor.html#upload-a-file) files
-- [ ] [Add files using the command line](https://docs.gitlab.com/ee/gitlab-basics/add-file.html#add-a-file-using-the-command-line) or push an existing Git repository with the following command:
+## Key Features
 
+- **Autonomous line following** using an EV3 colour sensor to detect and remain on a marked route.
+- **Obstacle detection and avoidance** using an ultrasonic sensor to identify nearby objects and trigger navigation manoeuvres.
+- **Forklift-style object handling** using a dedicated motorised lifting mechanism.
+- **Object pickup and placement functionality** combining chassis movement with operation of the lifting mechanism.
+- **Route reacquisition** after navigation and obstacle-avoidance manoeuvres using colour-sensor feedback.
+- **Behaviour-based control** using the leJOS subsumption architecture and `Arbitrator`.
+- **Emergency-stop functionality** using the EV3 touch sensor or Escape button to stop the drive and lift motors.
+- **Sensor-driven movement behaviour** using reflected-light measurements from the colour sensor.
+- **Component-level testing** for the lifting mechanism, line-following functionality, and ultrasonic navigation.
+
+## Technologies
+
+| Technology | Purpose |
+| --- | --- |
+| Java | Core programming language |
+| LEGO Mindstorms EV3 | Robotics hardware platform |
+| leJOS | Java framework and hardware API for EV3 |
+| leJOS `MovePilot` | Differential-drive movement and navigation |
+| leJOS Subsumption API | Behaviour-based robot control |
+| EV3 Colour Sensor | Line and surface detection |
+| EV3 Ultrasonic Sensor | Distance measurement and obstacle detection |
+| EV3 Touch Sensor | Physical emergency-stop input |
+| EV3 Large Motors | Left and right drivetrain |
+| EV3 Medium Motor | Forklift/lifting mechanism |
+
+## Hardware Configuration
+
+The robot was developed using the following EV3 hardware configuration:
+
+| Component | Port |
+| --- | --- |
+| Ultrasonic Sensor | S1 |
+| Colour Sensor | S2 |
+| Touch Sensor | S3 |
+| Left Drive Motor | A |
+| Right Drive Motor | B |
+| Lift Motor | C |
+
+The drivetrain uses two independently controlled EV3 large motors to create a differential-drive chassis.
+
+In the main robot configuration, the wheel diameter is configured as **56 mm** with an axle length of **108 mm**.
+
+## System Design
+
+The software is divided into multiple Java classes responsible for different parts of the robot's functionality. This modular structure allows sensing, navigation, object handling, and high-level behaviours to be developed and tested independently before being integrated into the complete system.
+
+### `Driver.java`
+
+Acts as the main entry point for the robot and integrates the different hardware and software components.
+
+Its responsibilities include:
+
+- configuring the left and right drive motors;
+- defining the wheel and chassis configuration;
+- initialising the `MovePilot` navigation system;
+- initialising the ultrasonic, colour, and touch sensors;
+- configuring the lifting motor;
+- creating the robot's navigation and behaviour objects;
+- coordinating the initial object-handling sequence; and
+- starting the leJOS behaviour arbitrator.
+
+### `FollowLine.java`
+
+Implements the robot's line-following functionality using reflected-light measurements from the EV3 colour sensor.
+
+The robot uses sensor readings to determine whether it remains aligned with the marked route. When the expected surface is no longer detected, corrective movement and rotation can be performed to locate and reacquire the route.
+
+### `UltrasonicObjectAvoidance.java`
+
+Contains functionality associated with ultrasonic obstacle detection and navigation.
+
+The ultrasonic sensor measures the distance between the robot and nearby objects. The class contains routines used to respond to detected obstacles and perform movements intended to navigate around them.
+
+Colour-sensor feedback is also used to help the robot locate the marked route again following navigation manoeuvres.
+
+### `Backup.java`
+
+Implements a leJOS `Behavior` used by the robot's behaviour-based control system.
+
+The behaviour monitors ultrasonic sensor readings and can take control when an object is detected within the configured distance threshold. It coordinates obstacle-navigation functionality with chassis movement and operation of the lifting mechanism.
+
+### `ArmOperator.java`
+
+Encapsulates control of the robot's forklift mechanism.
+
+The class provides dedicated:
+
+- `lift()` functionality; and
+- `lower()` functionality.
+
+These methods control the EV3 medium motor responsible for operating the lifting mechanism.
+
+Separating this functionality into its own class keeps mechanical object-handling operations independent from the navigation logic.
+
+### `EmergencyStop.java`
+
+Implements an emergency-stop behaviour for the robot.
+
+The robot can respond to:
+
+- activation of the EV3 touch sensor; or
+- the Escape button on the EV3 brick.
+
+When triggered, the system stops the drivetrain and lifting motor, providing a simple safety mechanism during testing and operation.
+
+### `Light.java` and `Dark.java`
+
+These classes provide sensor-driven behaviours based on reflected-light measurements from the EV3 colour sensor.
+
+The behaviours allow movement characteristics such as linear speed to be adjusted according to the surface detected by the robot.
+
+## Autonomous Workflow
+
+At a high level, the robot's intended autonomous workflow consists of:
+
+1. Initialising the drivetrain, sensors, lifting motor, and behaviour controllers.
+2. Using the lifting mechanism and chassis movement to interact with a pallet-style LEGO object.
+3. Navigating along the marked route using colour-sensor feedback.
+4. Continuously monitoring the surrounding environment using the ultrasonic sensor.
+5. Detecting objects or obstacles within the robot's path.
+6. Executing navigation manoeuvres in response to detected obstacles.
+7. Using the colour sensor to locate and reacquire the marked route.
+8. Continuing navigation while transporting or positioning the object.
+9. Operating the lifting mechanism to raise or lower the object as required.
+
+The completed system therefore combines **environmental sensing, autonomous navigation, mechanical actuation, and behaviour-based control** within a single EV3 robotic platform.
+
+## Repository Structure
+
+```text
+EV3RoboticsProject/
+│
+├── README.md
+├── CHANGELOG
+│
+└── leJOSProject/
+    ├── ArmOperator.java
+    ├── ArmOperatorTest.java
+    ├── Backup.java
+    ├── Dark.java
+    ├── Driver.java
+    ├── EmergencyStop.java
+    ├── FollowLine.java
+    ├── FollowLineTester.java
+    ├── Light.java
+    ├── UltrasonicObjectAvoidance.java
+    └── UltrasonicObjectAvoidanceTest.java
 ```
-cd existing_repo
-git remote add origin https://gitlab.cim.rhul.ac.uk/zmac377/ev3-lejos-robot.git
-git branch -M main
-git push -uf origin main
+
+The repository contains the integrated robot implementation together with smaller test programs used to evaluate individual components during development.
+
+## Running the Project
+
+### Requirements
+
+Running the complete project requires compatible LEGO Mindstorms EV3 hardware and an environment configured for leJOS development.
+
+The principal requirements are:
+
+- LEGO Mindstorms EV3 brick
+- EV3 large motors
+- EV3 medium motor
+- EV3 ultrasonic sensor
+- EV3 colour sensor
+- EV3 touch sensor
+- Java development environment
+- leJOS EV3 libraries and runtime
+
+The physical robot should be connected according to the hardware port configuration described above.
+
+### Main Program
+
+The primary robot configuration and execution flow are defined in:
+
+```text
+leJOSProject/Driver.java
 ```
 
-## Integrate with your tools
+The Java project must be compiled and deployed to a **leJOS-enabled EV3 brick** using an appropriately configured EV3/leJOS development environment.
 
-- [ ] [Set up project integrations](https://gitlab.cim.rhul.ac.uk/zmac377/ev3-lejos-robot/-/settings/integrations)
+> **Note:** Movement distances, rotation angles, motor speeds, sensor thresholds, and line-detection ranges were calibrated for the physical robot and environment used during development. Different robot configurations, surfaces, lighting conditions, wheel dimensions, or sensor positions may require recalibration.
 
-## Collaborate with your team
+## Testing
 
-- [ ] [Invite team members and collaborators](https://docs.gitlab.com/ee/user/project/members/)
-- [ ] [Create a new merge request](https://docs.gitlab.com/ee/user/project/merge_requests/creating_merge_requests.html)
-- [ ] [Automatically close issues from merge requests](https://docs.gitlab.com/ee/user/project/issues/managing_issues.html#closing-issues-automatically)
-- [ ] [Enable merge request approvals](https://docs.gitlab.com/ee/user/project/merge_requests/approvals/)
-- [ ] [Set auto-merge](https://docs.gitlab.com/ee/user/project/merge_requests/merge_when_pipeline_succeeds.html)
+The repository contains dedicated programs used to test individual robot components and behaviours during development.
 
-## Test and Deploy
+### `ArmOperatorTest.java`
 
-Use the built-in continuous integration in GitLab.
+Used to test operation of the motorised lifting mechanism independently from the complete autonomous system.
 
-- [ ] [Get started with GitLab CI/CD](https://docs.gitlab.com/ee/ci/quick_start/index.html)
-- [ ] [Analyze your code for known vulnerabilities with Static Application Security Testing (SAST)](https://docs.gitlab.com/ee/user/application_security/sast/)
-- [ ] [Deploy to Kubernetes, Amazon EC2, or Amazon ECS using Auto Deploy](https://docs.gitlab.com/ee/topics/autodevops/requirements.html)
-- [ ] [Use pull-based deployments for improved Kubernetes management](https://docs.gitlab.com/ee/user/clusters/agent/)
-- [ ] [Set up protected environments](https://docs.gitlab.com/ee/ci/environments/protected_environments.html)
+### `FollowLineTester.java`
 
-***
+Supports isolated testing and development of the colour-sensor-based line-following functionality.
 
-# Editing this README
+### `UltrasonicObjectAvoidanceTest.java`
 
-When you're ready to make this README your own, just edit this file and use the handy template below (or feel free to structure it however you want - this is just a starting point!). Thanks to [makeareadme.com](https://www.makeareadme.com/) for this template.
+Supports testing of ultrasonic object detection and associated navigation behaviour.
 
-## Suggestions for a good README
+Testing individual components separately helped identify hardware, sensor, and movement issues before integrating the different subsystems into the complete robot.
 
-Every project is different, so consider which of these sections apply to yours. The sections used in the template are suggestions for most open source projects. Also keep in mind that while a README can be too long and detailed, too long is better than too short. If you think your README is too long, consider utilizing another form of documentation rather than cutting out information.
+## Engineering Concepts Demonstrated
 
-## Name
-Choose a self-explaining name for your project.
+The project provided practical experience with several software engineering and robotics concepts, including:
 
-## Description
-Let people know what your project can do specifically. Provide context and add a link to any reference visitors might be unfamiliar with. A list of Features or a Background subsection can also be added here. If there are alternatives to your project, this is a good place to list differentiating factors.
+- Object-oriented programming in Java
+- Autonomous robotics
+- Sensor integration
+- Sensor calibration
+- Behaviour-based robotics
+- Subsumption architecture
+- Differential-drive navigation
+- Obstacle detection
+- Reactive navigation
+- Motor and actuator control
+- Hardware/software integration
+- Modular software design
+- Component-level testing
+- Debugging software on physical hardware
+- Team-based software development
+- Integration of independently developed components
 
-## Badges
-On some READMEs, you may see small images that convey metadata, such as whether or not all the tests are passing for the project. You can use Shields to add some to your README. Many services also have instructions for adding a badge.
+A significant aspect of the project involved translating software logic into reliable physical behaviour. Unlike a purely software-based system, robot performance was affected by factors such as sensor positioning, lighting conditions, motor behaviour, movement accuracy, and the physical construction of the robot.
 
-## Visuals
-Depending on what you are making, it can be a good idea to include screenshots or even a video (you'll frequently see GIFs rather than actual videos). Tools like ttygif can help, but check out Asciinema for a more sophisticated method.
+## Team Project
 
-## Installation
-Within a particular ecosystem, there may be a common way of installing things, such as using Yarn, NuGet, or Homebrew. However, consider the possibility that whoever is reading your README is a novice and would like more guidance. Listing specific steps helps remove ambiguity and gets people to using your project as quickly as possible. If it only runs in a specific context like a particular programming language version or operating system or has dependencies that have to be installed manually, also add a Requirements subsection.
+This project was developed collaboratively as part of a **university team robotics project**.
 
-## Usage
-Use examples liberally, and show the expected output if you can. It's helpful to have inline the smallest example of usage that you can demonstrate, while providing links to more sophisticated examples if they are too long to reasonably include in the README.
+Development responsibilities were distributed among team members across areas including:
 
-## Support
-Tell people where they can go to for help. It can be any combination of an issue tracker, a chat room, an email address, etc.
+- robot navigation;
+- line-following behaviour;
+- obstacle detection and avoidance;
+- forklift/object-handling functionality;
+- behaviour-based control;
+- hardware configuration;
+- testing and calibration;
+- debugging;
+- system integration; and
+- project documentation.
 
-## Roadmap
-If you have ideas for releases in the future, it is a good idea to list them in the README.
+The final system required the independently developed hardware and software components to operate together as a complete autonomous robot.
 
-## Contributing
-State if you are open to contributions and what your requirements are for accepting them.
+## Project Context
 
-For people who want to make changes to your project, it's helpful to have some documentation on how to get started. Perhaps there is a script that they should run or some environment variables that they need to set. Make these steps explicit. These instructions could also be useful to your future self.
+This repository contains the implementation of an academic robotics project developed using **LEGO Mindstorms EV3 and leJOS**.
 
-You can also document commands to lint the code or run tests. These steps help to ensure high code quality and reduce the likelihood that the changes inadvertently break something. Having instructions for running tests is especially helpful if it requires external setup, such as starting a Selenium server for testing in a browser.
+The project focused on applying Java programming, object-oriented software design, robotics, sensor integration, and autonomous navigation concepts to a physical system.
 
-## Authors and acknowledgment
-Show your appreciation to those who have contributed to the project.
+The resulting robot demonstrates how software can integrate sensor input, navigation algorithms, motor control, and mechanical actuation to interact autonomously with a physical environment.
 
-## License
-For open source projects, say how it is licensed.
+## Status
 
-## Project status
-If you have run out of energy or time for your project, put a note at the top of the README saying that development has slowed down or stopped completely. Someone may choose to fork your project or volunteer to step in as a maintainer or owner, allowing your project to keep going. You can also make an explicit request for maintainers.
+This repository represents the completed academic team project and is maintained as a portfolio project demonstrating experience with **Java, autonomous robotics, object-oriented programming, sensor integration, behaviour-based control, and hardware/software integration**.
