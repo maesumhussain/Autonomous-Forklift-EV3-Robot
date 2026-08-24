@@ -12,6 +12,14 @@ The software was developed in Java using the **leJOS EV3 API**, which provides i
 
 The project was completed as a **team project**, with development responsibilities distributed across different aspects of the robot including navigation, object handling, obstacle detection, behaviour control, testing, calibration, and system integration.
 
+## 🎥 Project Demo
+
+Watch the Autonomous EV3 Forklift Robot in action, demonstrating the completed physical robot and its autonomous functionality:
+
+[![Watch the Autonomous EV3 Forklift Robot Demo](https://img.youtube.com/vi/5zZOCwuKrnA/maxresdefault.jpg)](https://youtube.com/shorts/5zZOCwuKrnA)
+
+**Click the image above to watch the robot demonstration on YouTube.**
+
 ## Key Features
 
 - **Autonomous line following** using an EV3 colour sensor to detect and remain on a marked route.
