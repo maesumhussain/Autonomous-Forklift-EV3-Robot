@@ -147,7 +147,6 @@ The completed system therefore combines **environmental sensing, autonomous navi
 EV3RoboticsProject/
 │
 ├── README.md
-├── CHANGELOG
 │
 └── leJOSProject/
     ├── ArmOperator.java
