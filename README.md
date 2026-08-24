@@ -16,7 +16,7 @@ The project was completed as a **team project**, with development responsibiliti
 
 Watch the Autonomous EV3 Forklift Robot in action, demonstrating the completed physical robot and its autonomous functionality:
 
-[![Watch the Autonomous EV3 Forklift Robot Demo](https://img.youtube.com/vi/5zZOCwuKrnA/maxresdefault.jpg)](https://youtube.com/shorts/5zZOCwuKrnA)
+[![Watch the Autonomous EV3 Forklift Robot Demo](https://img.youtube.com/vi/5zZOCwuKrnA/hqdefault.jpg)](https://youtube.com/shorts/5zZOCwuKrnA)
 
 **Click the image above to watch the robot demonstration on YouTube.**
 
